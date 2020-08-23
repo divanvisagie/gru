@@ -1,5 +1,7 @@
 const bonjour = require('bonjour')()
 const express = require('express')
+const { Board, Led } = require('johnny-five')
+const board = new Board()
 const { createStore } = require('redux')
 const app = express()
 
@@ -11,14 +13,14 @@ bonjour.find({ type: 'gru' }, (service) => {
 })
 
 //Store
-const state = {
+const s = {
     led: {
         pin: 13,
         value: 0
     }
 };
 
-function arduino(state = state, action) {
+function arduino(state = s, action) {
     switch (action.type) {
         case 'LED_TOGGLE':
             if (state.led.value === 0)
@@ -47,4 +49,9 @@ app.listen(PORT, () => {
 })
 
 //Board
+board.on('ready', () => {
+    
+    const led = new Led(13);
+    led.blink()
+})
 
