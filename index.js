@@ -5,7 +5,6 @@ const board = new Board()
 const { createStore } = require('redux')
 const app = express()
 
-
 const PORT = 3000
 
 bonjour.find({ type: 'gru' }, (service) => {
@@ -13,7 +12,7 @@ bonjour.find({ type: 'gru' }, (service) => {
 })
 
 //Store
-const s = {
+let s = {
     led: {
         pin: 13,
         value: 0
@@ -21,13 +20,17 @@ const s = {
 };
 
 function arduino(state = s, action) {
+    console.log(state)
     switch (action.type) {
         case 'LED_TOGGLE':
-            if (state.led.value === 0)
-                state.led.value = 255
-            if (state.led.value === 255)
-                state.led.value = 0
-            return state
+            console.log('toggle', state.led.value)
+            console.log('toggle to', state.led.value)
+            return {
+                led: {
+                    pin: state.led.pin,
+                    value: state.led.value === 0 ? 1 : 0
+                }
+            };
         default:
             return state
     }
@@ -37,7 +40,11 @@ let store = createStore(arduino)
 
 //Server
 app.get('/led', (req, res) => {
-    res.send('Hello World');
+    store.dispatch({ type: 'LED_TOGGLE' })
+    const led = store.getState().led
+
+
+    res.send(`state is ${led.value}`)
 })
 
 app.listen(PORT, () => {
@@ -50,8 +57,12 @@ app.listen(PORT, () => {
 
 //Board
 board.on('ready', () => {
-    
-    const led = new Led(13);
-    led.blink()
+    const state = store.getState()
+    const led = new Led(parseInt(state.led.pin, 10))
+
+    store.subscribe(() => {
+        const state = store.getState()
+        state.led.value === 0 ? led.off() : led.on()
+    })
 })
 
