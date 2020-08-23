@@ -7,7 +7,7 @@ const app = express()
 
 const PORT = 3000
 
-bonjour.find({ type: 'gru' }, (service) => {
+bonjour.find({ type: 'http' }, (service) => {
     console.log('found a gru server', service)
 })
 
@@ -50,7 +50,8 @@ app.get('/led', (req, res) => {
 app.listen(PORT, () => {
     bonjour.publish({
         name: 'Gru Minion Manager',
-        type: 'gru',
+        type: 'http',
+        host: 'gru.local',
         port: PORT
     })
 })
