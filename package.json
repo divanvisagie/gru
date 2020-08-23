@@ -18,6 +18,7 @@
   },
   "homepage": "https://github.com/divanvisagie/gru#readme",
   "dependencies": {
-    "bonjour": "^3.5.0"
+    "bonjour": "^3.5.0",
+    "express": "^4.17.1"
   }
 }
